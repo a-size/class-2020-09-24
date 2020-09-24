@@ -28,8 +28,8 @@ sep_old <-
   select( -instructor_full_name, -course_section_code, -(grad:total)) %>%
   rename_with(~ str_replace(.x, "course_", "")) %>% 
   group_by(id, title, name, department) %>% 
-  summarize(u_grad = sum(u_grad), .groups = "drop") %>% 
-  filter(u_grad > 10)
+  summarize(old_u_grad = sum(u_grad), .groups = "drop") %>% 
+  filter(old_u_grad > 10)
 
 
 sep_new <- 
@@ -40,8 +40,8 @@ sep_new <-
   select( -instructor_full_name, -course_section_code, -(grad:total)) %>%
   rename_with(~ str_replace(.x, "course_", "")) %>% 
   group_by(id, title, name, department) %>% 
-  summarize(u_grad = sum(u_grad), .groups = "drop") %>% 
-  filter(u_grad > 10)
+  summarize(new_u_grad = sum(u_grad), .groups = "drop") %>% 
+  filter(new_u_grad > 10)
 ```
 
 ### Scene 1
@@ -50,9 +50,41 @@ sep_new <-
 
 a) Make a table using **gt** which shows the five courses with the biggest increase. Use the [How to make a table](https://davidkane9.github.io/PPBDS/tools.html#how-to-make-a-table) section of *The Primer*.
 
+```{r}
+
+
+classes <- inner_join(sep_old, sep_new) %>%
+  mutate(change = new_u_grad - old_u_grad) %>%
+  arrange(change) %>%
+  slice(1:5, 412:416)
+
+classes %>% gt()
+
+#Make the table look nice! 
+#top_inc() %>%
+
+```
+
+
+
 b) Make a table using **gt** which shows the five courses with the biggest decrease.
 
 c) Make a nice looking graphic which shows these 10 courses.
+
+```{r}
+
+#total <- rbind()
+
+ggplot(data = classes, mapping = aes(x = title, y = change, fill = department))+ 
+  geom_col()+ 
+  coord_flip()+ 
+  labs(title = "Classes vs Change", color = "Department")+ 
+
+# theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ 
+
+```
+
 
 d) Write down some thoughts about what might explain these increases and decreases. Or is it all just random? How would we know?
 
@@ -69,6 +101,12 @@ See [here](https://rpubs.com/dkane/week-3) for my answers. No need to copy exact
 With our actual Preceptor Table, how might we investigate the effect of work assigned in the first two weeks? Would the estimated Average Treatment Effect be accurate? Why or why not?
 
 Make a spreadsheet --- I recommend using Google sheets, but anything will do --- which shows a simple version of that actual Preceptor Table. What are the units? What are the outcomes? What is the treatment? What is the causal effect? You may assign whichever of the 10 classes you like to treatment and the rest to control.
+
+```{r}
+
+```
+
+
 
 ## Scene 3
 
